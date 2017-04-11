@@ -27,13 +27,13 @@ func main() {
 	//	fmt.Println(err)
 	//	return
 	//}
-	user := User{
-		Name: "Nick",
-	}
+	//user := User{
+	//	Name: "Nick",
+	//}
 
 	response, _ := r.Table("user").
 		Get("ae07ebda-db72-4697-ac5d-d1dc57b73c1e").
-		Update(user).
+		Delete().
 		RunWrite(session)
 
 	fmt.Printf("%#v\n", response)
