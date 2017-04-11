@@ -31,10 +31,18 @@ func main() {
 	//	Name: "Nick",
 	//}
 
-	response, _ := r.Table("user").
-		Get("ae07ebda-db72-4697-ac5d-d1dc57b73c1e").
-		Delete().
-		RunWrite(session)
+	//response, _ := r.Table("user").
+	//	Get("ae07ebda-db72-4697-ac5d-d1dc57b73c1e").
+	//	Delete().
+	//	RunWrite(session)
+	//
+	//fmt.Printf("%#v\n", response)
 
-	fmt.Printf("%#v\n", response)
+	cursor, _ := r.Table("user").
+		Changes(r.ChangesOpts{IncludeInitial: true}).
+		Run(session)
+	var changeResponse r.ChangeResponse
+	for cursor.Next(&changeResponse) {
+		fmt.Printf("%#v\n", changeResponse)
+	}
 }
