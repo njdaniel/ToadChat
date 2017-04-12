@@ -4,7 +4,6 @@ import (
 	"net/http"
 	"log"
 	r "github.com/dancannon/gorethink"
-	"golang.org/x/net/route"
 )
 
 type Channel struct {
