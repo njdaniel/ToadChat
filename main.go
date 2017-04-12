@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"log"
 	r "github.com/dancannon/gorethink"
+	"golang.org/x/net/route"
 )
 
 type Channel struct {
@@ -29,7 +30,7 @@ func main() {
 
 	router.Handle("channel add", addChannel)
 	router.Handle("channel subscribe", subscribeChannel)
-
+	router.Handle("channel unsubscribe", unsubscribeChannel)
 	http.Handle("/", router)
 	http.ListenAndServe(":4000", nil)
 }
