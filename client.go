@@ -17,6 +17,14 @@ type Client struct {
 	socket *websocket.Conn
 	findHandler FindHandler
 	session *r.Session
+	stopChannels map[int]chan bool
+}
+
+func (c *Client) NewStopChannel(stopKey int) chan bool {
+	stop := make(chan bool)
+	c.stopChannels[stopKey] = stop
+	return stop
+
 }
 
 func (client *Client) Read() {
@@ -50,6 +58,7 @@ func NewClient(socket *websocket.Conn, findHandler FindHandler,
 		socket: socket,
 		findHandler: findHandler,
 		session: session,
+		stopChannels: make(map[int]chan bool),
 	}
 
 }
