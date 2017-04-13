@@ -59,7 +59,7 @@ func subscribeUser(client *Client, data interface{}) {
 	go func() {
 		stop := client.NewStopChannel(UserStop)
 		cursor, err := r.Table("user").
-			Changes(r.ChangesOpts{InclueInitial: true}).
+			Changes(r.ChangesOpts{IncludeInitial: true}).
 			Run(client.session)
 
 		if err != nil {
