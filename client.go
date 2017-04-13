@@ -1,23 +1,21 @@
 package main
 
 import (
-	"github.com/gorilla/websocket"
 	r "github.com/dancannon/gorethink"
+	"github.com/gorilla/websocket"
+	"log"
 )
 
 type FindHandler func(string) (Handler, bool)
 
-type Message struct {
-	Name string      `json:"name"`
-	Data interface{} `json:"data"`
-}
-
 type Client struct {
-	send chan Message
-	socket *websocket.Conn
-	findHandler FindHandler
-	session *r.Session
+	send         chan Message
+	socket       *websocket.Conn
+	findHandler  FindHandler
+	session      *r.Session
 	stopChannels map[int]chan bool
+	id           string
+	userName     string
 }
 
 func (c *Client) NewStopChannel(stopKey int) chan bool {
@@ -48,7 +46,7 @@ func (client *Client) Read() {
 	client.socket.Close()
 }
 
-func (client *Client) Write(){
+func (client *Client) Write() {
 	for msg := range client.send {
 		if err := client.socket.WriteJSON(msg); err != nil {
 			break
@@ -64,18 +62,28 @@ func (c *Client) Close() {
 	}
 	close(c.send)
 
-
 }
 
 func NewClient(socket *websocket.Conn, findHandler FindHandler,
-		session *r.Session) *Client {
+	session *r.Session) *Client {
+	var user User
+	user.Name = "anonymous"
+	res, err := r.Table("user").Insert(user).RunWrite(session)
+	if err != nil {
+		log.Println(err.Error())
+	}
+	var id string
+	if len(res.GeneratedKeys) > 0 {
+		id = res.GeneratedKeys[0]
+	}
 	return &Client{
-		send: make(chan Message),
-		socket: socket,
-		findHandler: findHandler,
-		session: session,
+		send:         make(chan Message),
+		socket:       socket,
+		findHandler:  findHandler,
+		session:      session,
 		stopChannels: make(map[int]chan bool),
+		id:           id,
+		userName:     user.Name,
 	}
 
 }
-
